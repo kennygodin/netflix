@@ -41,15 +41,16 @@ export default async function handler(
     if (req.method === 'DELETE') {
       const { currentUser } = await serverAuth(req);
 
-      const movieId = req.body;
+      const { movieId } = req.body;
 
       const existingMovie = await prismadb.movie.findUnique({
         where: {
           id: movieId,
         },
       });
+
       if (!existingMovie) {
-        throw new Error('Invalid Id');
+        throw new Error('Invalid ID');
       }
 
       const updatedFavouriteIds = without(currentUser.favouriteIds, movieId);
@@ -69,6 +70,7 @@ export default async function handler(
     return res.status(405).end();
   } catch (error) {
     console.log(error);
-    return res.status(400).end();
+
+    return res.status(500).end();
   }
 }
